@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>우리 함께한 시간</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      overflow-y: visible;
+      height: 100vh;
+      background: linear-gradient(to bottom, #fff3f8, #e6f4ff);
+      font-family: 'Nanum Pen Script', cursive;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    body.fade-in {
+      opacity: 1;
+    }
+
+    html, body {
+        height: 100%;
+        overflow-x: hidden;
+        position: relative;
+    }
+
+    body {
+        overflow: hidden;
+    }
+
+    h1 {
+      position: absolute;
+      margin-top: -550px;
+      margin-bottom: 10px;
+      font-size: 40px;
+      color: #d63384;
+    }
+
+    #counter {
+      position: absolute;
+      margin-bottom: 350px;
+      font-size: 34px;
+      color: #333;
+      background: rgba(255, 255, 255, 0.4);
+      padding: 20px 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      backdrop-filter: blur(8px);
+    }
+
+    .heart {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      animation: float linear infinite;
+      pointer-events: none;
+      z-index: 1;
+      bottom: -40px;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(-10vh) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    #timeMessage {
+        position: absolute;
+        top: 240px;
+        width: 86%;
+        text-align: center;
+        font-size: 30px;
+        color: #f48eba;
+        margin: 50px 30px;
+        font-family: 'Nanum Pen Script', cursive;
+        line-height: 1.2;
+        white-space: normal;
+        word-break: keep-all;
+        z-index: 5;
+    }
+
+    .back-button {
+      position: fixed;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      font-family: 'Nanum Pen Script', cursive;
+      background-color: #ff5ca2;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 14px 28px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+
+    .back-button:hover {
+      background-color: #ff3d89;
+    }
+
+    .peck-gif {
+        max-width: 200px;
+        margin: 400px auto;
+        position: absolute;
+        top: 10px;
+        display: block;
+        border-radius: 10px;
+        transform: translateX(-8%);
+    }
+    
+  </style>
+
+  <script>
+  window.addEventListener("DOMContentLoaded", () => {
+    document.body.classList.add("fade-in");
+  });
+</script>
+
+</head>
+<body>
+
+  <h1>우리가 함께한 시간</h1>
+  <div id="counter">Loading...</div>
+  <p id="timeMessage">앞으로도 이 시간을 계속 늘리게 하자. 내가 잘 부탁할게. 나는 안떠날거니까 우리 꼭 같이 붙어있자 🫶🏻</p>
+  <button class="back-button" onclick="window.location.href='index.html#icon'">뒤로가기</button>
+
+  <img src="peck.gif" alt="Cute Animation" class="peck-gif" />
+
+  <script>
+    const startDate = new Date("2023-12-20T00:00:00");
+
+    function updateCounter() {
+      const now = new Date();
+      let diff = now - startDate;
+
+      const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+      diff -= years * 1000 * 60 * 60 * 24 * 365.25;
+
+      const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30.44));
+      diff -= months * 1000 * 60 * 60 * 24 * 30.44;
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      diff -= days * 1000 * 60 * 60 * 24;
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      diff -= hours * 1000 * 60 * 60;
+
+      const minutes = Math.floor(diff / (1000 * 60));
+      diff -= minutes * 1000 * 60;
+
+      const seconds = Math.floor(diff / 1000);
+
+      document.getElementById("counter").textContent =
+        `${years}년 ${months}개월 ${days}일 ${hours}시간 ${minutes}분 ${seconds}초`;
+    }
+
+    setInterval(updateCounter, 1000);
+    updateCounter();
+  </script>
+
+  <script>
+    function createHeart() {
+      const colors = [
+        "#FFC0CB", "#FFB6C1", "#FFDEE9", "#FDC5F5",
+        "#ADD8E6", "#B0E0E6", "#E0FFFF", "#AFDBF5"
+      ];
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      const size = 20 + Math.random() * 20;
+      heart.style.width = size + "px";
+      heart.style.height = size + "px";
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.top = "-40px";
+      const duration = 8 + Math.random() * 5;
+      heart.style.animationDuration = `${duration}s`
+      const encodedColor = encodeURIComponent(colors[Math.floor(Math.random() * colors.length)]);
+      heart.style.backgroundImage = `url('data:image/svg+xml;utf8,<svg viewBox="0 0 32 29.6" xmlns="http://www.w3.org/2000/svg"><path fill="${encodedColor}" d="M23.6,0c-3.4,0-6.4,2.1-7.6,5.1C14.8,2.1,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.6,16,21.2,16,21.2s16-11.6,16-21.2C32,3.8,28.2,0,23.6,0z"/></svg>')`;
+
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), duration * 1000);
+    }
+
+    setInterval(() => {
+  console.log("Generating heart");
+  createHeart();
+}, 1000);
+  </script>
+
+  <script>
+    function goBack() {
+      window.location.href = "index.html#icon";
+    }
+  </script>
+
+    <script>
+    document.addEventListener('gesturestart', e => e.preventDefault());
+    document.addEventListener('gesturechange', e => e.preventDefault());
+    document.addEventListener('gestureend', e => e.preventDefault());
+  </script>
+
+</body>
+</html>

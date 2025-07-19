@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Playlist</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(to bottom right, #ffe4f0, #e0f4ff);
+      font-family: 'Nanum Pen Script', cursive;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    body.fade-in {
+      opacity: 1;
+    }
+
+    .content-wrapper {
+        padding-top: 25px; /* adjust this value to your preference */
+    }
+
+    .page-title {
+        text-align: center;
+        margin: 24px 0 40px;
+        font-size: 36px;
+        color: #ff5ca2;
+        font-family: 'Nanum Pen Script', cursive;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .song {
+      position: absolute;
+      left: calc(50% - 140px);
+      transform: none;
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 20px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      padding: 16px 20px;
+      width: 240px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .song img {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+    }
+
+    .song-info {
+      flex: 1;
+    }
+
+    .song-title {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .song-artist {
+      font-size: 16px;
+      color: #666;
+    }
+
+    .play-button {
+      background-color: hsl(214, 100%, 68%);
+      border: none;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .play-button:hover {
+      background-color: #ff3d89;
+    }
+    
+
+    .back-button {
+      position: fixed;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      font-family: 'Nanum Pen Script', cursive;
+      background-color: #ff5ca2;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 14px 28px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+
+    .back-button:hover {
+      background-color: #ff3d89;
+    }
+  </style>
+</head>
+<body>
+    <div class="content-wrapper">
+    <h1 class="page-title">너를 생각나게 만드는 노래들</h1>
+
+    <div class="song" style="top: 110px;">
+    <img src="Drowning.png" alt="cover" />
+    <div class="song-info">
+      <div class="song-title">Drowning</div>
+      <div class="song-artist">WOODZ</div>
+    </div>
+    <button class="play-button" onclick="window.open('https://music.youtube.com/watch?v=NbKH4iZqq1Y&si=6P9G38m5fb4285rc', '_blank')">▶</button>
+  </div>
+
+   <div class="song" style="top: 210px;">
+    <img src="Crooked.png" alt="cover" />
+    <div class="song-info">
+      <div class="song-title">삐딱하게</div>
+      <div class="song-artist">BIGBANG</div>
+    </div>
+    <button class="play-button" onclick="window.open('https://music.youtube.com/watch?v=ywoyAdPEyTg&si=_eP-K-gpiqZejQC2', '_blank')">▶</button>
+  </div>
+
+  <div class="song" style="top: 310px;">
+    <img src="Sober.png" alt="cover" />
+    <div class="song-info">
+      <div class="song-title">맨정신</div>
+      <div class="song-artist">BIGBANG</div>
+    </div>
+    <button class="play-button" onclick="window.open('https://music.youtube.com/watch?v=zT3VfvAjvtk&si=NUgWyjb_xiKloQ6X', '_blank')">▶</button>
+  </div>
+
+  <div class="song" style="top: 410px;">
+    <img src="BeautifulThings.png" alt="cover" />
+    <div class="song-info">
+      <div class="song-title">Beautiful Things</div>
+      <div class="song-artist">Benson Boone</div>
+    </div>
+    <button class="play-button" onclick="window.open('https://music.youtube.com/watch?v=eLhSxOAaWmg&si=nO0TDao2eyNMWT8P', '_blank')">▶</button>
+  </div>
+
+  <div class="song" style="top: 510px;">
+    <img src="LikeJennie.png" alt="cover" />
+    <div class="song-info">
+      <div class="song-title">like MANDU</div>
+      <div class="song-artist">JENNIE, ft Haemin</div>
+    </div>
+    <button class="play-button" onclick="window.open('https://music.youtube.com/watch?v=HMQlkbXjSTM&si=0BoW4OoANBstgEj5', '_blank')">▶</button>
+  </div>
+
+  <button class="back-button" onclick="window.location.href='index.html#icon'">뒤로가기</button>
+  </div>
+
+  <script>
+    // Fade in body
+    window.addEventListener("DOMContentLoaded", () => {
+      document.body.classList.add("fade-in");
+    });
+  </script>
+
+  <script>
+  const songs = document.querySelectorAll(".song");
+
+  songs.forEach(song => {
+    let isDragging = false;
+    let offsetX, offsetY;
+    let velocityX = 0;
+    let velocityY = 0;
+    let lastX, lastY;
+    let animationFrame;
+
+    const friction = 0.98;
+    const bounceFactor = -0.6;
+
+    const move = () => {
+      const rect = song.getBoundingClientRect();
+      let nextX = song.offsetLeft + velocityX;
+      let nextY = song.offsetTop + velocityY;
+
+      const maxX = window.innerWidth - rect.width;
+      const maxY = window.innerHeight - rect.height;
+
+      if (nextX <= 0 || nextX >= maxX) {
+        velocityX *= bounceFactor;
+        nextX = Math.max(0, Math.min(nextX, maxX));
+      }
+
+      if (nextY <= 0 || nextY >= maxY) {
+        velocityY *= bounceFactor;
+        nextY = Math.max(0, Math.min(nextY, maxY));
+      }
+
+      song.style.left = nextX + "px";
+      song.style.top = nextY + "px";
+
+      velocityX *= friction;
+      velocityY *= friction;
+
+      if (Math.abs(velocityX) > 0.1 || Math.abs(velocityY) > 0.1) {
+        animationFrame = requestAnimationFrame(move);
+      }
+    };
+
+    const startDrag = (x, y) => {
+      isDragging = true;
+      cancelAnimationFrame(animationFrame);
+      offsetX = x - song.offsetLeft;
+      offsetY = y - song.offsetTop;
+      lastX = x;
+      lastY = y;
+      song.style.zIndex = 1000;
+    };
+
+    const duringDrag = (x, y) => {
+      if (!isDragging) return;
+      velocityX = x - lastX;
+      velocityY = y - lastY;
+      lastX = x;
+      lastY = y;
+      song.style.left = x - offsetX + "px";
+      song.style.top = y - offsetY + "px";
+    };
+
+    const endDrag = () => {
+      if (!isDragging) return;
+      isDragging = false;
+      animationFrame = requestAnimationFrame(move);
+      song.style.zIndex = "";
+    };
+
+    // Mouse events
+    song.addEventListener("mousedown", (e) => startDrag(e.clientX, e.clientY));
+    document.addEventListener("mousemove", (e) => duringDrag(e.clientX, e.clientY));
+    document.addEventListener("mouseup", endDrag);
+
+    // Touch events
+    song.addEventListener("touchstart", e => {
+      const touch = e.touches[0];
+      startDrag(touch.clientX, touch.clientY);
+    }, { passive: false });
+
+    document.addEventListener("touchmove", e => {
+      if (!isDragging) return;
+      const touch = e.touches[0];
+      duringDrag(touch.clientX, touch.clientY);
+    }, { passive: false });
+
+    document.addEventListener("touchend", endDrag);
+  });
+</script>
+
+   <script>
+    document.addEventListener('gesturestart', e => e.preventDefault());
+    document.addEventListener('gesturechange', e => e.preventDefault());
+    document.addEventListener('gestureend', e => e.preventDefault());
+  </script>
+
+</body>
+</html>

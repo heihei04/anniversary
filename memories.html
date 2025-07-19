@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Memories</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Nanum Pen Script', cursive;
+      background: linear-gradient(to bottom right, #ffe4f0, #e0f4ff);
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    body.fade-in {
+      opacity: 1;
+    }
+
+    .page-title {
+  text-align: center;
+  font-size: 36px;
+  margin-top: 24px;
+  color: #d63384;
+  font-family: 'Nanum Pen Script', cursive;
+}
+
+    .carousel {
+      display: flex;
+      height: 100vh;
+      overflow-x: scroll;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      padding: 20px 20px 80px;
+      box-sizing: border-box;
+      gap: 32px;
+      justify-content: center;
+    }
+
+    .carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .memory-container {
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     height: 100vh;
+     width: 100vh;
+     padding: 20px;
+     background: linear-gradient(to bottom right, #ffe4f0, #e0f4ff);
+     overflow: hidden;
+    }
+    
+    .polaroid {
+      flex: 0 0 70vw;
+      max-width: 450px;
+      height: 70vh;  
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      scroll-snap-align: start;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.2);
+      padding: 16px;
+      box-sizing: border-box;
+    }
+    
+    .polaroid img {
+      max-width: 90vw;
+      max-height: 55vh;
+      height: auto;
+      object-fit: contain;
+      border-radius: 8px;
+      flex-grow: 1;
+    }
+    
+    .caption {
+      margin-top: 12px;
+      font-size: 30px;
+      color: #333;
+      text-align: center;
+      font-family: 'Nanum Pen Script', cursive;
+    }
+
+    .back-button {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 22px;
+      background-color: #ff5ca2;
+      color: white;
+      border: none;
+      border-radius: 24px;
+      padding: 12px 24px;
+      cursor: pointer;
+      font-family: 'Nanum Pen Script', cursive;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .back-button:hover {
+      background-color: #ff3d89;
+    }
+  </style>
+</head>
+<body>
+<h1 class="page-title">우리의 소중한 추억들</h1>
+
+  <div class="carousel">
+    <!-- Repeat this block for 20 photos -->
+    <div class="polaroid">
+      <img src="mem1.png" alt="Memory 1">
+      <div class="caption">첫 여행의 설렘</div>
+    </div>
+
+    <div class="polaroid">
+      <img src="mem2.png" alt="Memory 2">
+      <div class="caption">너랑 걷던 그 길</div>
+    </div>
+
+    <div class="polaroid">
+      <img src="mem3.png" alt="Memory 3">
+      <div class="caption">카페에서의 하루</div>
+    </div>
+
+    <div class="polaroid">
+      <img src="mem4.png" alt="Memory 4">
+      <div class="caption">함께한 바닷가</div>
+    </div>
+
+    <div class="polaroid">
+      <img src="mem5.png" alt="Memory 5">
+      <div class="caption">크리스마스의 밤</div>
+    </div>
+
+    <div class="polaroid">
+      <img src="mem6.png" alt="Memory 6">
+      <div class="caption">웃음 가득한 순간</div>
+    </div>
+
+    <div class="polaroid">
+      <img src="mem7.png" alt="Memory 7">
+      <div class="caption">비 오는 날의 포옹</div>
+    </div>
+
+    <div class="polaroid">
+      <img src="mem8.png" alt="Memory 8">
+      <div class="caption">편지 속 감동</div>
+    </div>
+
+    <div class="polaroid">
+      <img src="mem9.png" alt="Memory 9">
+      <div class="caption">함께 만든 요리</div>
+    </div>
+
+    <div class="polaroid">
+      <img src="mem10.png" alt="Memory 10">
+      <div class="caption">아무 이유 없는 선물</div>
+    </div>
+
+    <!-- Add mem11.jpg to mem20.jpg here -->
+  </div>
+
+  <button class="back-button" onclick="goBack()">뒤로가기</button>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      document.body.classList.add("fade-in");
+    });
+
+    function goBack() {
+      document.body.classList.remove("fade-in");
+      setTimeout(() => {
+        window.location.href = "index.html#icon";
+      }, 300);
+    }
+  </script>
+
+  <script>
+    document.addEventListener('gesturestart', e => e.preventDefault());
+    document.addEventListener('gesturechange', e => e.preventDefault());
+    document.addEventListener('gestureend', e => e.preventDefault());
+  </script>
+
+</body>
+</html>

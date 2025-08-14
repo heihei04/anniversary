@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>스크래치 카드</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --top-space: 72px; /* will be measured by JS */
+      --btn-space: calc(env(safe-area-inset-bottom, 0px) + 88px);
+    }
+
+    /* Page look (matches your other sites) */
+    body{
+      margin:0;
+      font-family:'Nanum Pen Script', cursive;
+      background: linear-gradient(to bottom right, #ffe4f0, #e0f4ff);
+      overflow:hidden;
+      opacity:0;
+      transition:opacity .35s ease;
+      min-height:100vh;
+    }
+    body.fade-in{ opacity:1; }
+
+    .page-title{
+      text-align:center;
+      font-size:36px;
+      color:#d63384;
+      margin:24px 0 0 0;
+    }
+
+    /* Horizontal snap carousel */
+    .carousel{
+      display:flex;
+      height: calc(100vh - var(--top-space));
+      overflow-x:auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      gap: 0;
+      padding: 0 0 var(--btn-space) 0;
+    }
+    .carousel::-webkit-scrollbar{ display:none; }
+
+    .slide{
+      flex: 0 0 100vw; /* one full viewport each */
+      height: calc(100vh - var(--top-space) - var(--btn-space));
+      display:flex; align-items:center; justify-content:center;
+      scroll-snap-align:center; scroll-snap-stop:always;
+    }
+
+    /* Scratch ticket frame — upgraded visuals, no markup changes */
+    .ticket{
+      position:relative;
+      width: min(86vw, 360px);
+      aspect-ratio: 3 / 2;
+      border-radius: 18px;
+      background:
+        radial-gradient(120% 100% at 50% 0%, rgba(255,255,255,.75), rgba(255,255,255,.9) 40%, #ffffff 70%) /* paper feel */;
+      box-shadow:
+        0 12px 26px rgba(0,0,0,.18),
+        inset 0 1px 0 rgba(255,255,255,.7),
+        inset 0 -1px 0 rgba(0,0,0,.05);
+      overflow:hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      isolation:isolate; /* keep pseudo-elements layered nicely */
+    }
+    /* top ribbon band */
+    .ticket::before{
+      content:"";
+      position:absolute; left:0; right:0; top:0; height:42px;
+      background: linear-gradient(90deg, #ffe2f1, #e6f1ff);
+      box-shadow: 0 1px 0 rgba(255,255,255,.8), inset 0 -1px 0 rgba(0,0,0,.06);
+      z-index: 1;
+    }
+    /* soft gloss */
+    .ticket::after{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(180deg, rgba(255,255,255,.38), rgba(255,255,255,0) 35%);
+      pointer-events:none;
+      z-index: 1;
+    }
+
+    /* Hidden prize underneath */
+    .prize{
+      position:absolute; inset:0;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      padding: 16px;
+      text-align:center;
+      color:#1f2d3d;
+      z-index:1;
+    }
+    .prize h2{
+      margin:8px 0 10px 0;
+      font-size:34px;
+      color:#6696E3;
+      text-shadow: 0 1px 0 rgba(255,255,255,.7);
+    }
+    .prize p{
+      margin:0;
+      font-size:28px;
+      line-height:1.25;
+      color:#333;
+    }
+
+    /* The silver “coat” (canvas) that gets scratched away */
+    .coat{
+      position:absolute; inset:0;
+      z-index:2;
+      touch-action:none;          /* smoother touch draw */
+      cursor: crosshair;
+      border-radius: 18px;
+    }
+
+    /* Top helper text */
+    .hint{
+      position:absolute;
+      top:8px; left:50%;
+      transform:translateX(-50%);
+      font-size:20px;
+      color:#3a3a3a;
+      border-radius: 14px;
+      padding: 4px 10px;
+      z-index:3;
+      pointer-events:none;
+    }
+
+    /* Back button (same as others) */
+    .back-button {
+      position: fixed;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      font-family: 'Nanum Pen Script', cursive;
+      background-color: #ff5ca2;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 14px 28px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+    .back-button:hover{ background:#ff3d89; }
+  </style>
+</head>
+<body>
+  <h1 class="page-title">🎁 생일 스크래치 카드</h1>
+
+  <div class="carousel" id="carousel">
+    <!-- Card 1 -->
+    <div class="slide">
+      <div class="ticket">
+        <div class="hint">손가락으로 긁어서 확인하기</div>
+        <div class="prize">
+          <h2>🎮 발로란트 스킨</h2>
+          <p>원하는 스킨 하나 고르기!</p>
+        </div>
+        <canvas class="coat" data-id="card1"></canvas>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="slide">
+      <div class="ticket">
+        <div class="hint">손가락으로 긁어서 확인하기</div>
+        <div class="prize">
+          <h2>소원 들어주기</h2>
+          <p>무엇이든 한 가지! ✨</p>
+        </div>
+        <canvas class="coat" data-id="card2"></canvas>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="slide">
+      <div class="ticket">
+        <div class="hint">손가락으로 긁어서 확인하기</div>
+        <div class="prize">
+          <h2>원하는 데이트</h2>
+          <p>원하는 대로 영화/게임/통화 같이 하기 💻</p>
+        </div>
+        <canvas class="coat" data-id="card3"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <button class="back-button" onclick="goBack()">뒤로가기</button>
+
+  <script>
+    // Fade in + title spacing like your other pages
+    window.addEventListener('DOMContentLoaded', () => {
+      const t = document.querySelector('.page-title');
+      document.documentElement.style.setProperty('--top-space', ((t?.offsetHeight||0)+10)+'px');
+      document.body.classList.add('fade-in');
+    });
+    function goBack(){
+      document.body.classList.remove('fade-in');
+      setTimeout(()=>{ window.location.href = 'index.html#icon'; }, 250);
+    }
+
+    // ---- Scratch logic (canvas) ----
+    function setupScratch(canvas){
+      const ctx = canvas.getContext('2d', { willReadFrequently:true });
+      let dpr = Math.max(1, window.devicePixelRatio || 1);
+
+      function resize(){
+        const rect = canvas.getBoundingClientRect();
+        canvas.width  = Math.round(rect.width * dpr);
+        canvas.height = Math.round(rect.height * dpr);
+
+        // draw using CSS pixel coords (no manual * dpr later)
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        // metallic coat (CSS pixel units)
+        const w = rect.width, h = rect.height;
+        const g = ctx.createLinearGradient(0,0,w,h);
+        g.addColorStop(0,   '#cfd6de');
+        g.addColorStop(.5,  '#b5bec8');
+        g.addColorStop(1,   '#e4e9f3');
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.fillStyle = g;
+        ctx.fillRect(0,0,w,h);
+
+        // subtle speckles
+        ctx.globalAlpha = 0.22;
+        for(let i=0;i<140;i++){
+          ctx.fillStyle = `rgba(255,255,255,${Math.random()*0.35})`;
+          ctx.fillRect(Math.random()*w, Math.random()*h, 2, 2);
+        }
+        ctx.globalAlpha = 1;
+
+        // erase stroke settings
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = 28;       // CSS px now (no *dpr)
+      }
+
+      resize();
+      window.addEventListener('resize', () => {
+        // repaint the foil after resize
+        canvas.classList.remove('cleared');
+        resize();
+      });
+
+      let scratching = false, lastX=0, lastY=0;
+
+      function getPos(e){
+        const rect = canvas.getBoundingClientRect();
+        const p = e.touches ? e.touches[0] : e;
+        return { x: p.clientX - rect.left, y: p.clientY - rect.top };
+      }
+
+      function start(e){
+        if (e.cancelable) e.preventDefault();
+        scratching = true;
+        const {x,y} = getPos(e);
+        lastX = x; lastY = y;
+        ctx.beginPath();
+        ctx.arc(x, y, ctx.lineWidth/2, 0, Math.PI*2);
+        ctx.fill();
+      }
+
+      function move(e){
+        if(!scratching) return;
+        if (e.cancelable) e.preventDefault();
+        const {x,y} = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(lastX,lastY);
+        ctx.lineTo(x,y);
+        ctx.stroke();
+        lastX = x; lastY = y;
+      }
+
+      function end(){
+        if(!scratching) return;
+        scratching = false;
+        checkClear();
+      }
+
+      function checkClear(){
+        try{
+          const { width, height } = canvas;
+          const img = ctx.getImageData(0,0,width,height).data;
+          let cleared = 0, total = 0;
+          const step = 8 * 4; // sample every 8th pixel
+          for(let i=3;i<img.length;i+=step){
+            total++;
+            if(img[i] === 0) cleared++; // alpha channel == 0 => erased
+          }
+          if(cleared/total > 0.55){
+            canvas.style.transition = 'opacity .35s ease';
+            canvas.style.opacity = 0;
+            canvas.style.pointerEvents = 'none';
+            canvas.classList.add('cleared');
+          }
+        }catch(_e){}
+      }
+
+      // Pointer listeners (mouse + touch)
+      canvas.addEventListener('pointerdown', start);
+      canvas.addEventListener('pointermove', move);
+      canvas.addEventListener('pointerup', end);
+      canvas.addEventListener('pointercancel', end);
+
+      // iOS legacy touch fallback
+      canvas.addEventListener('touchstart', start, {passive:false});
+      canvas.addEventListener('touchmove',  move,  {passive:false});
+      canvas.addEventListener('touchend',   end);
+      canvas.addEventListener('touchcancel',end);
+    }
+
+    document.querySelectorAll('.coat').forEach(setupScratch);
+
+    // Prevent pinch-zoom like your other pages (optional)
+    document.addEventListener('gesturestart', e => e.preventDefault());
+    document.addEventListener('gesturechange', e => e.preventDefault());
+    document.addEventListener('gestureend',   e => e.preventDefault());
+  </script>
+</body>
+</html>

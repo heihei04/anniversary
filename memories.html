@@ -6,6 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
   <style>
+    :root{
+      /* JS will set --top-space to match the real title height */
+      --top-space: 72px; /* fallback */
+      --btn-space: calc(env(safe-area-inset-bottom, 0px) + 88px); /* room for back button */
+    }
+
     body {
       margin: 0;
       font-family: 'Nanum Pen Script', cursive;
@@ -14,47 +20,48 @@
       opacity: 0;
       transition: opacity 1s ease;
     }
-
     body.fade-in { opacity: 1; }
 
     .page-title {
       text-align: center;
       font-size: 36px;
-      margin-top: 24px;
+      margin: 24px 0 0 0;
       color: #d63384;
       font-family: 'Nanum Pen Script', cursive;
     }
 
+    /* The horizontal scroller occupies the screen minus the title height */
     .carousel {
       display: flex;
-      height: 100vh;
+      height: calc(100vh - var(--top-space));
       overflow-x: scroll;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
-      padding: 0;
+      padding: 0 0 var(--btn-space) 0;   /* space so content never sits under the button */
       gap: 0;
       justify-content: flex-start;
+      box-sizing: border-box;
     }
     .carousel::-webkit-scrollbar { display: none; }
 
-    /* Slide (full-viewport wide so snaps show 1 at a time) */
+    /* One full-viewport slide at a time, centered, with snap lock */
     .polaroid {
-      flex: 0 0 100vw;          /* exactly one viewport width per slide */
-      height: 100vh;
+      flex: 0 0 100vw;  /* exactly one viewport width */
+      height: calc(100vh - var(--top-space) - var(--btn-space));
       display: flex;
       align-items: center;
-      justify-content: center;  /* center the inner card */
+      justify-content: center;  /* center the card in the slide */
       scroll-snap-align: center;
-      scroll-snap-stop: always; /* “lock” each slide */
+      scroll-snap-stop: always;
       box-sizing: border-box;
     }
 
     /* The actual instant-photo card */
     .polaroid-inner{
       background: #fff;
-      width: min(86vw, 520px);  /* scales on phones, capped on desktop */
-      aspect-ratio: 3/4;        /* consistent polaroid feel */
-      padding: 16px 16px 22px;  /* thicker bottom border */
+      width: min(86vw, 520px);  /* responsive width, capped on desktop */
+      aspect-ratio: 3 / 4;      /* keeps the polaroid feel */
+      padding: 16px 16px 22px;  /* thicker bottom border like real polaroids */
       border-radius: 12px;
       box-shadow: 0 10px 24px rgba(0,0,0,0.2);
       display: flex;
@@ -62,7 +69,7 @@
       box-sizing: border-box;
     }
 
-    /* Image area that centers any aspect ratio */
+    /* Image box centers any aspect ratio (portrait/landscape) */
     .photo-box{
       flex: 1;
       display: flex;
@@ -76,7 +83,7 @@
       max-height: 100%;
       width: auto;
       height: auto;
-      object-fit: contain;      /* letter/pillar-box inside the frame */
+      object-fit: contain;  /* letter/pillar-box neatly inside the frame */
       display: block;
     }
 
@@ -91,9 +98,9 @@
 
     .back-button {
       position: fixed;
-      bottom: 40px;
       left: 50%;
       transform: translateX(-50%);
+      bottom: max(24px, env(safe-area-inset-bottom, 24px)); /* safe area friendly */
       font-size: 22px;
       background-color: #ff5ca2;
       color: white;
@@ -118,7 +125,7 @@
         <div class="photo-box">
           <img src="mem1.png" alt="Memory 1" loading="lazy">
         </div>
-        <div class="caption">첫 여행의 설렘</div>
+        <div class="caption">처음으로 만듀를 이겼던 PC 방!</div>
       </div>
     </div>
 
@@ -127,7 +134,7 @@
         <div class="photo-box">
           <img src="mem2.png" alt="Memory 2" loading="lazy">
         </div>
-        <div class="caption">너랑 걷던 그 길</div>
+        <div class="caption">서로의 감정을 몰랐다 ㅋㅋ</div>
       </div>
     </div>
 
@@ -136,7 +143,7 @@
         <div class="photo-box">
           <img src="mem3.png" alt="Memory 3" loading="lazy">
         </div>
-        <div class="caption">카페에서의 하루</div>
+        <div class="caption">어떻게 처음부터 잤었지?</div>
       </div>
     </div>
 
@@ -145,7 +152,7 @@
         <div class="photo-box">
           <img src="mem4.png" alt="Memory 4" loading="lazy">
         </div>
-        <div class="caption">함께한 바닷가</div>
+        <div class="caption">너무나 아쉬웠던 발리의 마지막 날</div>
       </div>
     </div>
 
@@ -154,7 +161,7 @@
         <div class="photo-box">
           <img src="mem5.png" alt="Memory 5" loading="lazy">
         </div>
-        <div class="caption">크리스마스의 밤</div>
+        <div class="caption">내 첫 에버랜드 같이 가줘서 고마워</div>
       </div>
     </div>
 
@@ -163,7 +170,7 @@
         <div class="photo-box">
           <img src="mem6.png" alt="Memory 6" loading="lazy">
         </div>
-        <div class="caption">웃음 가득한 순간</div>
+        <div class="caption">만듀 덕분에 재밌었던 디오르 카페 경험</div>
       </div>
     </div>
 
@@ -172,7 +179,7 @@
         <div class="photo-box">
           <img src="mem7.png" alt="Memory 7" loading="lazy">
         </div>
-        <div class="caption">비 오는 날의 포옹</div>
+        <div class="caption">또 만듀를 시원하게 이긴 날</div>
       </div>
     </div>
 
@@ -181,7 +188,7 @@
         <div class="photo-box">
           <img src="mem8.png" alt="Memory 8" loading="lazy">
         </div>
-        <div class="caption">편지 속 감동</div>
+        <div class="caption">이걸 해냈네 🥹</div>
       </div>
     </div>
 
@@ -190,7 +197,7 @@
         <div class="photo-box">
           <img src="mem9.png" alt="Memory 9" loading="lazy">
         </div>
-        <div class="caption">함께 만든 요리</div>
+        <div class="caption">마지막으로 찍은 우리의 사진</div>
       </div>
     </div>
 
@@ -199,7 +206,7 @@
         <div class="photo-box">
           <img src="mem10.png" alt="Memory 10" loading="lazy">
         </div>
-        <div class="caption">아무 이유 없는 선물</div>
+        <div class="caption">만듀 덕분에 처음으로 한국 가는게 설랬어. 진심으로 너무 고마워</div>
       </div>
     </div>
   </div> <!-- end .carousel -->
@@ -207,10 +214,16 @@
   <button class="back-button" onclick="goBack()">뒤로가기</button>
 
   <script>
-    // fade in
+    // Fade-in and ensure we start at the first slide
     window.addEventListener("DOMContentLoaded", () => {
       document.body.classList.add("fade-in");
-      // start at first slide (iOS sometimes restores position)
+
+      // Measure the actual title height and reserve space above the scroller
+      const t = document.querySelector('.page-title');
+      const topH = t ? t.offsetHeight : 0;
+      document.documentElement.style.setProperty('--top-space', (topH + 12) + 'px');
+
+      // iOS sometimes restores scroll position; force start at 0
       const carousel = document.querySelector('.carousel');
       if (carousel){
         carousel.scrollLeft = 0;
@@ -225,6 +238,7 @@
   </script>
 
   <script>
+    // Prevent pinch-zoom gestures if desired (matches your other pages)
     document.addEventListener('gesturestart', e => e.preventDefault());
     document.addEventListener('gesturechange', e => e.preventDefault());
     document.addEventListener('gestureend', e => e.preventDefault());

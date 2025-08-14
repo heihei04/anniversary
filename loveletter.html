@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>편지</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
+  <style>
+    :root{ --title-space:72px; --btn-space:88px; }
+
+    body{
+      margin:0;
+      font-family:'Nanum Pen Script', cursive;
+      background: linear-gradient(to bottom right, #ffe4f0, #e0f4ff);
+      min-height:100vh; overflow:hidden; opacity:0; transition:opacity .3s ease;
+    }
+    body.fade-in{ opacity:1; }
+
+    header.page-title{
+      position:fixed; top:max(50px, env(safe-area-inset-top, 16px));
+      left:0; right:0; text-align:center; font-size:36px; color:#d63384; z-index:5;
+    }
+
+    .stage{
+      position:relative;
+      height:calc(100vh - var(--title-space) - var(--btn-space));
+      margin-top:var(--title-space);
+      display:grid; place-items:center;
+    }
+
+    .envlope-wrapper{ position:relative; width:300px; height:210px; perspective:900px; }
+
+    /* ENVELOPE */
+    #envelope{
+      position:absolute; inset:0; width:100%; height:100%;
+      border-bottom-left-radius:6px; border-bottom-right-radius:6px;
+      background:#3F71BF; box-shadow:0 8px 28px rgba(0,0,0,.18);
+      touch-action:none; overflow:hidden; transform-style:preserve-3d;
+    }
+    #envelope.open{ overflow:visible; }
+
+    .front{ position:absolute; width:0; height:0; }
+
+    .front.flap{
+      border-left:150px solid transparent;
+      border-right:150px solid transparent;
+      border-bottom:90px solid transparent;
+      border-top:110px solid #4F7EC9;
+      transform-origin:top center;
+      transition:transform .26s cubic-bezier(.37,.01,.2,1);
+      transform:rotateX(0deg);
+      backface-visibility:visible;
+      z-index:6;
+    }
+    .open  .front.flap{ transform:rotateX(-165deg); z-index:0; }
+    .close .front.flap{ transform:rotateX(0deg);    z-index:6; }
+
+    .front.pocket{
+      border-left:150px solid #6696E3;
+      border-right:150px solid #6696E3;
+      border-bottom:100px solid #4E86DF;
+      border-top:100px solid transparent;
+      border-bottom-left-radius:6px; border-bottom-right-radius:6px;
+      z-index:5;
+    }
+
+    /* LETTER */
+    .letter{
+      position:absolute; left:50%; top:30%;
+      width:90%; height:58%;
+      background:#fff; border-radius:8px; box-shadow:0 8px 20px rgba(0,0,0,.15);
+      transform:translate(-50%, 0);
+      transition:transform .22s cubic-bezier(.37,.01,.2,1), height .22s ease, width .22s ease;
+      display:flex; flex-direction:column; overflow:hidden; z-index:4; will-change:transform;
+    }
+    /* NEW: when just peeking, only raise z-index so it's tappable */
+    .letter.peek{ z-index:7; }
+    /* when fully out, extend for reading */
+    .letter.out{
+      z-index:7;
+      height:min(70vh, 480px);
+      width:min(92vw, 340px);
+    }
+
+    .grab{ height:18px; background:#eaf0ff; border-bottom:1px dashed #c9d6ff; cursor:grab; flex:0 0 auto; }
+    .grab:active{ cursor:grabbing; }
+
+    .letter-text{
+      flex:1 1 auto; min-height:0; overflow:auto; -webkit-overflow-scrolling:touch;
+      padding:14px 16px 20px; color:#333; font-size:18px; line-height:1.6; white-space:pre-line;
+    }
+
+    /* hearts */
+    .hearts{ position:absolute; top:90px; left:0; right:0; z-index:8; pointer-events:none; }
+    .heart{ position:absolute; bottom:0; right:10%; }
+    .heart:before, .heart:after{ content:""; position:absolute; width:50px; height:80px; background: #9CBBED; border-radius:50px 50px 0 0; top:0; }
+    .heart:before{ left:50px; transform:rotate(-45deg); transform-origin:0 100%; }
+    .heart:after { left:0;    transform:rotate(45deg);  transform-origin:100% 100%; }
+    .close .heart{ opacity:0; animation:none; }
+    .a1{ left:20%; transform:scale(.6); opacity:1; animation: slideUp 4s linear 1, sideSway 2s ease-in-out 4 alternate; animation-fill-mode:forwards; animation-delay:.7s; }
+    .a2{ left:55%; transform:scale(1);  opacity:1; animation: slideUp 5s linear 1, sideSway 4s ease-in-out 2 alternate; animation-fill-mode:forwards; animation-delay:.7s; }
+    .a3{ left:10%; transform:scale(.8); opacity:1; animation: slideUp 7s linear 1, sideSway 2s ease-in-out 6 alternate; animation-fill-mode:forwards; animation-delay:.7s; }
+    @keyframes slideUp{ 0%{ top:0 } 100%{ top:-600px } }
+    @keyframes sideSway{ 0%{ margin-left:0 } 100%{ margin-left:50px } }
+
+    .back-button {
+      position: fixed;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      font-family: 'Nanum Pen Script', cursive;
+      background-color: #ff5ca2;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 14px 28px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+    .back-button:hover{ background:#ff3d89; }
+  </style>
+</head>
+<body>
+  <header class="page-title">💌 편지</header>
+
+  <div class="stage">
+    <div class="envlope-wrapper">
+      <div id="envelope" class="close">
+        <div class="front flap"></div>
+        <div class="front pocket"></div>
+
+        <div class="letter" id="letter">
+          <div class="grab" id="grabHandle" title="끌어서 펼치기"></div>
+          <div class="letter-text" id="letterText">
+내 소중한 만듀콩이 한테,
+
+먼저 생일 진짜 너무 너무 축하해!! 🎂🥳🎈
+만듀가 오늘 재밌게 오랜만에 친구들이랑 재밌게 놀았으면 좋겠당 ㅎㅎ 근데 이건 내 편지니까 이제 해민이 타임이야. 만듀 친구들아! 잠깐 저리 가줘. 만듀 비릴께~ ☺️
+
+벌써 우리가 함께한지 200일이 넘었다니, 믿기지 않아. 시간이 어떻게 이렇게 빨리 지나갔을까? 근데 그 시간 동안 만듀랑 함께할 수 있어서 너무 고마웠어. 만듀는 내가 힘들 때, 지치고 복잡한 마음을 안고 있을 때, 항상 내 얘기를 들어줬고, 끝까지 옆에 있어줬잖아. 그런 만듀의 따뜻한 마음이 나한테는 얼마나 큰 힘이 됬는지 너는 모르지?
+
+내가 5월에 한국으로 갔을때도, 바빴을 텐데 나 보려고 시간 내주고, 하나부터 열까지 다 신경 써주고… 그때 만듀의 배려와 정성이 진짜 진짜 감동이었어. 내가 계속 말하지만 항상 먼저 챙겨주고, 웃게 해주고, 편하게 해주는 만듀 덕분에 그 시간이 너무 소중하고 특별하게 느껴졌어. 진짜 내가 처음으로 이렇게 한국 가는게 너무 너무 설랬어. 왜냐면 원래는 우리가 한국 가면 여기저기 사는 할머니, 할아버지, 사촌들, 이모, 삼촌 다 봐야되니까 힘들거든. 그리고 우리가 가족이라고 해도 많이 못 보는 사람들이니까 좀 불편하고, 말도 안통하고 답답하기도 하니까, 요즘 한국 가는게 그렇게 좋아하는건 아니였어. 근데 진짜 누구 덕분에 이렇개 매일 웃고 재밌게 놀아서 너무 너무 너ㅓㅓㅓㅓ무 좋았어. 말로 표현이 안될 정도로. 만듀랑 보낸 그 순간들, 하나하나 다 소중하게 기억할거야. 우리가 같이 걸었던 길 (밤이라서 겁나 무서웠는데 ㅎㅎ) 나눴던 대화, 만듀의 예쁘고 귀여운 표정, 웃음소리… 다 너무 너무 너무 그리워 🥺
+
+그냥 만듀는 정말 소중한 사람이야. 그냥 친구가 아니라, 내 마음속에 아주 특별한 자리를 차지하고 있는 사람이야. 만듀 없이 지금의 나는 상상도 안 될 정도로, 만듀는 나에겐 큰 존재야. 만듀랑 함께 웃고, 함께 울고, 서로 기대면서 이렇게 200일을 넘게 쌓아왔다는 게… 참 감사하고 기뻐. 만듀를 자랑 하고싶고.
+
+나는 항상 만듀한테 받기만 하는 것 같아서, 이렇게라도 내 마음을 편지로 전하고 싶었어. 물론 우리가 멀리 떨어져 사니까 내가 손편지는 지금 당장 쓰고 만듀한테는 못 주지만, 이렇개라도 만들어서 주고 싶었어. 항상 내 편이 되어줘서 고마워. 말하지 않아도 내 마음을 알아줘서 고마워. 그리고 고마워, 내 곁에 있어줘서.
+
+나는 말로 이런거 표현을 잘 못 해. 항상 이런거 받는건 좋아하는데 내가 이걸 다른 사람한테 해주는건 어려워 ㅎㅎ 그래도 불과하도 만듀는 항상 말해주잖아. 절때 안 떠날거라고. 내가 진짜 걱정이 많고 만듀한테 잘해준게 없다고 생각하는데 ㅠㅠ 어떻게 이렇개 착하고, 예쁘고, 귀엽고, 완벽한 사람이 나를 좋아하지? 내가 여태까지 만듀한테 난리 치고, 화를 쉽게 내고, 짜증내고, 삐져도, 만듀는 항상 내가 화 풀을때까지 옆에 기달려줬어. 너무 고마워. 같이 소리 안질러줘서 고맙고, 조용히 화 풀어주게 노력하는것도 고마워. 아 어떡하지? 만듀한테 고마운게 너무 많은데? 🥹 나는 진짜 만듀가 내 베프라고 부를수있어서 엄청 감사하고 운이 좋다고 생각해. 내가 만듀에게 해줄 수 있는게 많지 않지만, 만듀만큼은 언제나 행복했으면 좋겠고, 내가 그 행복을 함께할 수 있기를 바래 ㅎㅎ
+
+앞으로도 우리 계속 함께하자. 좋은 날도, 힘든 날도 다 같이 나누면서. 만듀가 나한테 해줬던 것처럼, 나도 언제나 만듀 편이 되어줄게. 만듀가 지치거나 힘들 때, 내가 만듀의 어깨가 되어줄게. 항상 만듀를 응원하고, 소중하게 생각하는 사람이 있다는 거 잊지 마 ☺️
+
+이 편지 그냥 막 써서 읽는게 힘들었으면 너무 미안해 ㅎㅎ
+
+정말 많이 고맙고, 많이 좋아해.그리고… 엄청 너무 많이 사랑해 💗
+
+항상 만듀 편인
+해민이가
+          </div>
+        </div>
+
+        <div class="hearts">
+          <div class="heart a1"></div>
+          <div class="heart a2"></div>
+          <div class="heart a3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="back-button" onclick="goBack()">뒤로가기</button>
+
+  <script>
+    // Fade-in & layout
+    window.addEventListener("DOMContentLoaded", () => {
+      const t = document.querySelector('.page-title');
+      document.documentElement.style.setProperty('--title-space', ((t?.offsetHeight||0) + 12) + 'px');
+      document.body.classList.add('fade-in');
+    });
+    function goBack(){ document.body.classList.remove('fade-in'); setTimeout(()=>location.href="index.html#icon",250); }
+
+    // Interactions
+    document.addEventListener("DOMContentLoaded", () => {
+      const envelope = document.getElementById("envelope");
+      const letter   = document.getElementById("letter");
+      const grab     = document.getElementById("grabHandle");
+
+      const CLOSED_Y = 0;
+      const PEEK_Y   = -34;    // show grab strip
+      const PULLED_Y = -190;   // fully out
+      const OUT_THRESHOLD = -90;
+      const SWIPE_DIST = 30;
+      const SNAP = 22;
+
+      const getY = () => {
+        const m = /translate\(-50%,\s*(-?\d+(\.\d+)?)px\)/.exec(letter.style.transform||"");
+        return m ? parseFloat(m[1]) : CLOSED_Y;
+      };
+      const setY = (y) => { letter.style.transform = `translate(-50%, ${y}px)`; };
+
+      // start state
+      setY(CLOSED_Y);
+      envelope.classList.add('close');
+      envelope.classList.remove('open');
+      letter.classList.remove('out','peek');
+
+      /* Swipe to open/close (now peeks and is grabbable) */
+      let sX=0, sY=0, moved=false, swiping=false;
+      const swipeStart = (e) => {
+        if (e.target.closest('#letter')) return;
+        const p = e.touches ? e.touches[0] : e;
+        sX=p.clientX; sY=p.clientY; moved=false; swiping=true;
+      };
+      const swipeMove=()=>{ if(swiping) moved=true; };
+      const swipeEnd=(e)=>{
+        if(!swiping) return; swiping=false;
+        const p=(e.changedTouches&&e.changedTouches[0])||e;
+        const dx=p.clientX-sX, dy=p.clientY-sY;
+        if(!moved || Math.abs(dy)<Math.abs(dx)) return;
+
+        if(dy < -SWIPE_DIST){ // OPEN -> peek + make tappable
+          envelope.classList.add('open'); envelope.classList.remove('close');
+          setY(PEEK_Y);
+          letter.classList.remove('out');
+          letter.classList.add('peek');   // <-- key line
+        }else if(dy > SWIPE_DIST){ // CLOSE
+          envelope.classList.add('close'); envelope.classList.remove('open');
+          setY(CLOSED_Y);
+          letter.classList.remove('out','peek');
+        }
+      };
+      envelope.addEventListener('mousedown', swipeStart);
+      envelope.addEventListener('touchstart', swipeStart, {passive:true});
+      window.addEventListener('mousemove', swipeMove);
+      window.addEventListener('mouseup',   swipeEnd);
+      window.addEventListener('touchmove', swipeMove, {passive:true});
+      window.addEventListener('touchend',  swipeEnd);
+
+      /* Drag the letter out */
+      let dragStartY=0, startY=PEEK_Y, dragging=false;
+      const grabDown=(e)=>{
+        if(!envelope.classList.contains('open')) return;
+        dragging=true;
+        const p=e.touches?e.touches[0]:e;
+        dragStartY=p.clientY; startY=getY();
+        document.body.style.userSelect='none';
+        if (e.cancelable) e.preventDefault();
+      };
+      const grabMove=(e)=>{
+        if(!dragging) return;
+        const p=e.touches?e.touches[0]:e;
+        const dy=p.clientY-dragStartY;
+        const next=Math.max(PULLED_Y, Math.min(PEEK_Y, startY+dy));
+        setY(next);
+
+        if(next <= OUT_THRESHOLD){ letter.classList.add('out'); letter.classList.remove('peek'); }
+        else                      { letter.classList.remove('out'); letter.classList.add('peek'); }
+
+        if (e.cancelable) e.preventDefault();
+      };
+      const grabUp=()=>{
+        if(!dragging) return;
+        dragging=false; document.body.style.userSelect='';
+        const cur=getY(), mid=(PEEK_Y+PULLED_Y)/2;
+        const target=(cur<mid-SNAP)?PULLED_Y:PEEK_Y;
+        setY(target);
+        if(target===PULLED_Y){ letter.classList.add('out'); letter.classList.remove('peek'); }
+        else                 { letter.classList.remove('out'); letter.classList.add('peek'); }
+      };
+      grab.addEventListener('mousedown', grabDown);
+      grab.addEventListener('touchstart', grabDown, {passive:false});
+      window.addEventListener('mousemove', grabMove, {passive:false});
+      window.addEventListener('touchmove', grabMove, {passive:false});
+      window.addEventListener('mouseup',   grabUp);
+      window.addEventListener('touchend',  grabUp);
+
+      document.getElementById('letterText').style.webkitOverflowScrolling='touch';
+    });
+
+    document.addEventListener('gesturestart', e => e.preventDefault());
+    document.addEventListener('gesturechange', e => e.preventDefault());
+    document.addEventListener('gestureend',   e => e.preventDefault());
+  </script>
+</body>
+</html>
+

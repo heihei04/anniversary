@@ -15,17 +15,15 @@
       transition: opacity 1s ease;
     }
 
-    body.fade-in {
-      opacity: 1;
-    }
+    body.fade-in { opacity: 1; }
 
     .page-title {
-  text-align: center;
-  font-size: 36px;
-  margin-top: 24px;
-  color: #d63384;
-  font-family: 'Nanum Pen Script', cursive;
-}
+      text-align: center;
+      font-size: 36px;
+      margin-top: 24px;
+      color: #d63384;
+      font-family: 'Nanum Pen Script', cursive;
+    }
 
     .carousel {
       display: flex;
@@ -33,58 +31,62 @@
       overflow-x: scroll;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
-      padding: 20px 20px 80px;
-      box-sizing: border-box;
-      gap: 32px;
-      justify-content: center;
+      padding: 0;
+      gap: 0;
+      justify-content: flex-start;
     }
+    .carousel::-webkit-scrollbar { display: none; }
 
-    .carousel::-webkit-scrollbar {
-      display: none;
-    }
-
-    .memory-container {
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     height: 100vh;
-     width: 100vh;
-     padding: 20px;
-     background: linear-gradient(to bottom right, #ffe4f0, #e0f4ff);
-     overflow: hidden;
-    }
-    
+    /* Slide (full-viewport wide so snaps show 1 at a time) */
     .polaroid {
-      flex: 0 0 70vw;
-      max-width: 450px;
-      height: 70vh;  
+      flex: 0 0 100vw;          /* exactly one viewport width per slide */
+      height: 100vh;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      scroll-snap-align: start;
-      background: white;
+      justify-content: center;  /* center the inner card */
+      scroll-snap-align: center;
+      scroll-snap-stop: always; /* “lock” each slide */
+      box-sizing: border-box;
+    }
+
+    /* The actual instant-photo card */
+    .polaroid-inner{
+      background: #fff;
+      width: min(86vw, 520px);  /* scales on phones, capped on desktop */
+      aspect-ratio: 3/4;        /* consistent polaroid feel */
+      padding: 16px 16px 22px;  /* thicker bottom border */
       border-radius: 12px;
       box-shadow: 0 10px 24px rgba(0,0,0,0.2);
-      padding: 16px;
+      display: flex;
+      flex-direction: column;
       box-sizing: border-box;
     }
-    
-    .polaroid img {
-      max-width: 90vw;
-      max-height: 55vh;
-      height: auto;
-      object-fit: contain;
+
+    /* Image area that centers any aspect ratio */
+    .photo-box{
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
       border-radius: 8px;
-      flex-grow: 1;
     }
-    
+    .photo-box img{
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;      /* letter/pillar-box inside the frame */
+      display: block;
+    }
+
     .caption {
-      margin-top: 12px;
+      margin-top: 10px;
       font-size: 30px;
       color: #333;
       text-align: center;
       font-family: 'Nanum Pen Script', cursive;
+      line-height: 1.2;
     }
 
     .back-button {
@@ -101,82 +103,124 @@
       cursor: pointer;
       font-family: 'Nanum Pen Script', cursive;
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 10;
     }
-
-    .back-button:hover {
-      background-color: #ff3d89;
-    }
+    .back-button:hover { background-color: #ff3d89; }
   </style>
 </head>
 <body>
-<h1 class="page-title">우리의 소중한 추억들</h1>
+  <h1 class="page-title">우리의 소중한 추억들</h1>
 
   <div class="carousel">
     <!-- Repeat this block for 20 photos -->
     <div class="polaroid">
-      <img src="mem1.png" alt="Memory 1">
-      <div class="caption">첫 여행의 설렘</div>
+      <div class="polaroid-inner">
+        <div class="photo-box">
+          <img src="mem1.png" alt="Memory 1" loading="lazy">
+        </div>
+        <div class="caption">첫 여행의 설렘</div>
+      </div>
     </div>
 
     <div class="polaroid">
-      <img src="mem2.png" alt="Memory 2">
-      <div class="caption">너랑 걷던 그 길</div>
+      <div class="polaroid-inner">
+        <div class="photo-box">
+          <img src="mem2.png" alt="Memory 2" loading="lazy">
+        </div>
+        <div class="caption">너랑 걷던 그 길</div>
+      </div>
     </div>
 
     <div class="polaroid">
-      <img src="mem3.png" alt="Memory 3">
-      <div class="caption">카페에서의 하루</div>
+      <div class="polaroid-inner">
+        <div class="photo-box">
+          <img src="mem3.png" alt="Memory 3" loading="lazy">
+        </div>
+        <div class="caption">카페에서의 하루</div>
+      </div>
     </div>
 
     <div class="polaroid">
-      <img src="mem4.png" alt="Memory 4">
-      <div class="caption">함께한 바닷가</div>
+      <div class="polaroid-inner">
+        <div class="photo-box">
+          <img src="mem4.png" alt="Memory 4" loading="lazy">
+        </div>
+        <div class="caption">함께한 바닷가</div>
+      </div>
     </div>
 
     <div class="polaroid">
-      <img src="mem5.png" alt="Memory 5">
-      <div class="caption">크리스마스의 밤</div>
+      <div class="polaroid-inner">
+        <div class="photo-box">
+          <img src="mem5.png" alt="Memory 5" loading="lazy">
+        </div>
+        <div class="caption">크리스마스의 밤</div>
+      </div>
     </div>
 
     <div class="polaroid">
-      <img src="mem6.png" alt="Memory 6">
-      <div class="caption">웃음 가득한 순간</div>
+      <div class="polaroid-inner">
+        <div class="photo-box">
+          <img src="mem6.png" alt="Memory 6" loading="lazy">
+        </div>
+        <div class="caption">웃음 가득한 순간</div>
+      </div>
     </div>
 
     <div class="polaroid">
-      <img src="mem7.png" alt="Memory 7">
-      <div class="caption">비 오는 날의 포옹</div>
+      <div class="polaroid-inner">
+        <div class="photo-box">
+          <img src="mem7.png" alt="Memory 7" loading="lazy">
+        </div>
+        <div class="caption">비 오는 날의 포옹</div>
+      </div>
     </div>
 
     <div class="polaroid">
-      <img src="mem8.png" alt="Memory 8">
-      <div class="caption">편지 속 감동</div>
+      <div class="polaroid-inner">
+        <div class="photo-box">
+          <img src="mem8.png" alt="Memory 8" loading="lazy">
+        </div>
+        <div class="caption">편지 속 감동</div>
+      </div>
     </div>
 
     <div class="polaroid">
-      <img src="mem9.png" alt="Memory 9">
-      <div class="caption">함께 만든 요리</div>
+      <div class="polaroid-inner">
+        <div class="photo-box">
+          <img src="mem9.png" alt="Memory 9" loading="lazy">
+        </div>
+        <div class="caption">함께 만든 요리</div>
+      </div>
     </div>
 
     <div class="polaroid">
-      <img src="mem10.png" alt="Memory 10">
-      <div class="caption">아무 이유 없는 선물</div>
+      <div class="polaroid-inner">
+        <div class="photo-box">
+          <img src="mem10.png" alt="Memory 10" loading="lazy">
+        </div>
+        <div class="caption">아무 이유 없는 선물</div>
+      </div>
     </div>
-    
-     </div>
+  </div> <!-- end .carousel -->
 
   <button class="back-button" onclick="goBack()">뒤로가기</button>
 
   <script>
+    // fade in
     window.addEventListener("DOMContentLoaded", () => {
       document.body.classList.add("fade-in");
+      // start at first slide (iOS sometimes restores position)
+      const carousel = document.querySelector('.carousel');
+      if (carousel){
+        carousel.scrollLeft = 0;
+        requestAnimationFrame(()=>{ carousel.scrollLeft = 0; });
+      }
     });
 
     function goBack() {
       document.body.classList.remove("fade-in");
-      setTimeout(() => {
-        window.location.href = "index.html#icon";
-      }, 300);
+      setTimeout(() => { window.location.href = "index.html#icon"; }, 300);
     }
   </script>
 
@@ -185,6 +229,5 @@
     document.addEventListener('gesturechange', e => e.preventDefault());
     document.addEventListener('gestureend', e => e.preventDefault());
   </script>
-
 </body>
 </html>

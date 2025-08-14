@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>200일 축하해!</title>
+  <title>생일 축하해!</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=swap" rel="stylesheet">
   <style>
@@ -262,23 +262,41 @@
       animation: fadeMessageOut 0.4s ease forwards;
     }
 
-    .tutorial {
-      position: fixed;
-      bottom: 50px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 25px;
-      padding: 25px 20px;
-      width: 80%;
-      max-width: 380px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-      text-align: center;
-      z-index: 500;
-      font-size: 20px;
-      font-family: 'Nanum Pen Script', cursive;
-      animation: fadeMessageIn 0.5s ease;
-    }
+    /* replace your existing .tutorial block with this */
+.tutorial {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);  /* center on any screen */
+  width: min(80vw, 320px);
+  max-height: 70vh;
+  overflow: auto;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 25px;
+  padding: 10px 15px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  text-align: center;
+  z-index: 1000;
+  font-size: 20px;
+  font-family: 'Nanum Pen Script', cursive;
+
+  /* fade control */
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  pointer-events: none;          /* don’t click while hidden */
+}
+
+.tutorial.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* put this inside <style>, after the .tutorial rules */
+.tutorial-text{
+  white-space: pre-line;   /* keep \n as real line breaks */
+  word-break: keep-all;    /* don’t split Korean characters */
+  overflow-wrap: break-word; /* allow wrapping at spaces if needed */
+}
     
     .tutorial-img {
       width: 90px;
@@ -296,6 +314,15 @@
       font-family: 'Nanum Pen Script', cursive;
       cursor: pointer;
     }
+
+    .tutorial {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.tutorial.show {
+  opacity: 1;
+}
 
     .dumpling {
       position: fixed;
@@ -356,7 +383,7 @@
 
   <!-- Floating Hearts -->
   <script>
-let dumplingCount = 0;
+let dumplingCount = parseInt(localStorage.getItem("dumplingCount") || "0", 10);
 
 function showUnlockMessage(text) {
   const msg = document.getElementById("unlockMessage");
@@ -377,6 +404,7 @@ function showUnlockMessage(text) {
 
 function updateDumplingUI() {
   document.getElementById("dumplingCount").textContent = dumplingCount;
+  localStorage.setItem("dumplingCount", String(dumplingCount));
 }
 
 function checkUnlocks() {
@@ -404,7 +432,8 @@ function unlockIcon(icon) {
     localStorage.setItem("unlockedIcons", JSON.stringify(unlocked));
   }
 
-  dumplingCount = 0;
+  const cost = parseInt(icon.getAttribute("data-cost"), 10) || 0;
+dumplingCount = Math.max(0, dumplingCount - cost);
   updateDumplingUI();
   checkUnlocks();
   showUnlockMessage(`🎉 ${id.charAt(0).toUpperCase() + id.slice(1)} 열었어!`);
@@ -517,13 +546,13 @@ window.addEventListener("load", () => {
       <img src="plane.png" class="plane" alt="Plane" />
       <img src="globe.png" class="globe right" alt="Australia" />
     </div>
-    <div class="start-title">200일 축하해!</div>
+    <div class="start-title">생일 축하해!</div>
     <button class="start-button" onclick="startJourney()">START</button>
   </div>
 
   <!-- ICON SCREEN -->
   <div class="icon-screen" id="iconScreen">
-    <div class="icon-title">200일 축하해!</div>
+    <div class="icon-title">생일 축하해!</div>
     <div class="icon-folder">
       <div class="icon-grid">
         <a href="#" class="icon locked" data-cost="1" data-id="time">
@@ -569,19 +598,58 @@ window.addEventListener("load", () => {
     }
 
     function showTutorial() {
-      const popup = document.getElementById("tutorialPopup");
-      const text = document.getElementById("tutorialText");
-      const button = document.getElementById("tutorialNext");
-      let step = 0;
-      popup.style.display = "block";
-      
-      button.onclick = () => {
-        if (step === 0) {
-          text.textContent = "오! 저기 위에서 떨어지는 만두를 잡아줘! 맛있겠당!\n만듀가 잘하면, 내가 여기 있는 방들 열어줄게.";
-          button.textContent = "알겠엉, 기달려!";
-          step = 1;
-    } else {
+  const popup  = document.getElementById("tutorialPopup");
+  const text   = document.getElementById("tutorialText");
+  const button = document.getElementById("tutorialNext");
+
+  // Steps: text + button label
+  const steps = [
+    {
+      text: "어? 드디어 왔엉?? 잘 왔다! 나 배고파…",
+      btn:  "어떡해?"
+    },
+    {
+      text: "오! 저기 위에서 떨어지는 만두를 잡아줘! 맛있겠당!\n만듀가 잘하면, 내가 여기 있는 방들 열어줄게.",
+      btn:  "알겠엉, 기다려!"
+    }
+  ];
+
+  let i = 0;
+
+  const render = () => {
+    text.textContent = steps[i].text;
+    button.textContent = steps[i].btn;
+  };
+
+  const fadeIn = () => {
+    popup.style.display = "block";
+    // next frame to trigger the transition
+    requestAnimationFrame(() => popup.classList.add("show"));
+  };
+
+  const fadeOut = (cb) => {
+    popup.classList.remove("show");
+    popup.addEventListener("transitionend", () => {
       popup.style.display = "none";
+      if (cb) cb();
+    }, { once: true });
+  };
+
+  // initial render + fade in
+  render();
+  fadeIn();
+
+  button.onclick = () => {
+    if (i < steps.length - 1) {
+      // crossfade to next step
+      fadeOut(() => {
+        i++;
+        render();
+        fadeIn();
+      });
+    } else {
+      // close on last step
+      fadeOut();
     }
   };
 }
@@ -608,8 +676,8 @@ window.addEventListener("load", () => {
   </div>
     
   <div id="tutorialPopup" class="tutorial" style="display: none;">
-    <img src="pig.png" alt="Pig" class="tutorial-img" />
-    <div class="tutorial-text" id="tutorialText">어 드디어 왔엉?? 잘 왔다! 나 배고파…</div>
+    <img src="sadPig.png" alt="Pig" class="tutorial-img" />
+    <div class="tutorial-text" id="tutorialText">어? 드디어 왔엉?? 잘 왔다! 나 배고파…</div>
     <button id="tutorialNext">어떡해?</button>
   </div>
     
